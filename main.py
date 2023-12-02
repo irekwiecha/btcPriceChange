@@ -24,7 +24,7 @@ news_parameters = {
     "apikey": APIkey,
     "time_from": f"{last24h}",
 }
-news_endpoint = "https://www.alphavantage.co/query?"
+news_endpoint = "https://www.alphavantage.co/query"
 
 resp_btc = requests.get(btc_endpoint)
 resp_btc.raise_for_status()
@@ -34,7 +34,7 @@ resp_news = requests.get(news_endpoint, params=news_parameters)
 resp_news.raise_for_status()
 news_data = resp_news.json()["feed"][:3]
 
-if btc_change >= abs(PRICE_DIFF):
+if abs(btc_change) >= PRICE_DIFF:
     for _ in range(3):
         sentiment_score = f"{news_data[_]['overall_sentiment_label']} | Price change: {btc_change:.2f}%"
         headline = news_data[_]["title"]
