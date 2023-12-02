@@ -30,22 +30,19 @@ resp_btc = requests.get(btc_endpoint)
 resp_btc.raise_for_status()
 btc_change = resp_btc.json()["market_data"]["price_change_percentage_24h"]
 
-resp_news = requests.get(news_endpoint, params=news_parameters)
-resp_news.raise_for_status()
-news_data = resp_news.json()["feed"][:3]
-
 if abs(btc_change) >= PRICE_DIFF:
+    resp_news = requests.get(news_endpoint, params=news_parameters)
+    resp_news.raise_for_status()
+    news_data = resp_news.json()["feed"][:3]
     for _ in range(3):
         sentiment_score = f"{news_data[_]['overall_sentiment_label']} | Price change: {btc_change:.2f}%"
         headline = news_data[_]["title"]
         summary = news_data[_]["summary"]
-        source = news_data[_]
         sms_text = (
             f"Sentiment: {sentiment_score}\nHeadline: {headline}\nSummary: {summary}"
         )
 
         client = Client(account_sid, auth_token)
-
         message = client.messages.create(
             from_=twilio_nr,
             body=sms_text,
